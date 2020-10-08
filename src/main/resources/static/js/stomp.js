@@ -9,13 +9,18 @@ var app = (function () {
     }
     var stompClient = null;
     var getMousePosition = function (evt) {
-        $('#myCanvas').click(function (e) {
-            var rect = canvas.getBoundingClientRect();
-            var x = e.clientX - rect.left;
-            var y = e.clientY - rect.top;
-            console.info(x);
-            console.info(y);
-        });
+        let active = false;
+        if (!active){
+            $('#myCanvas').click(function (e) {
+                var rect = canvas.getBoundingClientRect();
+                var x = e.clientX - rect.left;
+                var y = e.clientY - rect.top;
+            });
+            active = true;
+        }else{
+            alert("La compra de tiquetes ya está activa")
+        }
+
     };
     var drawSeats = function (cinemaFunction) {
         c = document.getElementById("myCanvas");

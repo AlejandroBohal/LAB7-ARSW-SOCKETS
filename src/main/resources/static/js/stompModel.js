@@ -1,19 +1,37 @@
 var app2 = (function () {
-    var seats = [[true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true]];
+    let seats = [[true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true]];
+    let seatPositions = [[null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null]];
     class Seat {
         constructor(row, col) {
             this.row = row;
             this.col = col;
         }
     }
+    class SeatPosition{
+        constructor(x,y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
     var stompClient = null;
+    var checkPosition = (x, y) => {
+        for (let i = 0; i < seatPositions.length; i++) {
+            for (let j = 0; j < seatPositions[i].length; j++) {
+                if (x >= seatPositions[i][j].x && x <= seatPositions[i][j].x + 20) {
+                    if (y >= seatPositions[i][j].y && y <= seatPositions[i][j].y + 20) {
+                        app2.buyTicket(i,j)
+                    }
+                }
+            }
+        }
+    }
     var getMousePosition = function (evt) {
-        canvas = document.getElementById("canvas");
-        var rect = canvas.getBoundingClientRect();
-        return {
-            x: evt.clientX - rect.left,
-            y: evt.clientY - rect.top
-        };
+        $('#myCanvas').click(function (e) {
+            var rect =myCanvas.getBoundingClientRect();
+            var x = e.clientX - rect.left;
+            var y = e.clientY - rect.top;
+            checkPosition(x, y);
+        });
     };
     var drawSeats = function (cinemaFunction) {
         var c = document.getElementById("myCanvas");
@@ -36,6 +54,9 @@ var app2 = (function () {
                 }
                 col++;
                 ctx.fillRect(20 * col, 20 * row, 20, 20);
+                if (seatPositions[i][j] === null){
+                    seatPositions[i][j] = new SeatPosition(20 * col, 20 * row);
+                }
                 col++;
             }
             row++;
@@ -46,14 +67,17 @@ var app2 = (function () {
         var socket = new SockJS('/stompendpoint');
         stompClient = Stomp.over(socket);
         stompClient.connect({}, function (frame) {
-            console.log('Connected: ' + frame);
             stompClient.subscribe('/topic/buyticket', message =>{
-                let received = message.body;
-                alert("Evento recibido "+ received);
+                let response = JSON.parse(message.body);
+                app2.changeSeat(response.row,response.col);
             }
             );
         });
     };
+    var addEventListener = () =>{
+        getMousePosition();
+        document.getElementById("buyTicket").disabled = true;
+    }
     var verifyAvailability = function (row,col) {
         let seat = new Seat(row,col)
         if (seats[row][col] === true){
@@ -70,10 +94,18 @@ var app2 = (function () {
             drawSeats();
             connectAndSubscribe();
         },
+        addEventListener:addEventListener,
         buyTicket: function (row, col) {
             let st = new Seat(row, col);
             console.info("buying ticket at row: " + row + "col: " + col);
             verifyAvailability(row,col);
+            drawSeats();
+            // addPointToCanvas(pt);
+        },
+        changeSeat: function (row, col) {
+            let st = new Seat(row, col);
+            seats[row][col]=false;
+            drawSeats();
             // addPointToCanvas(pt);
         },
         disconnect: function () {

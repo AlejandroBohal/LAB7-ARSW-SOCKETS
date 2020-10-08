@@ -28,17 +28,7 @@ and open the template in the editor.
         <form>
             <div class="form-row align-items-center">
                 <div class="col-auto">
-                    <label class="sr-only" for="row">Name</label>
-                    <input type="text" class="form-control mb-2" id="row" placeholder="Row">
-                </div>
-                <div class="col-auto">
-                    <label class="sr-only" for="col">Username</label>
-                    <div class="input-group mb-2">
-                        <input type="text" class="form-control" id="col" placeholder="Column">
-                    </div>
-                </div>
-                <div class="col-auto">
-                    <button type="button" class="btn btn-primary mb-2" onclick="app2.buyTicket($('#row').val(),$('#col').val())">Buy Ticket</button>
+                    <button type="button" class="btn btn-primary mb-2" id ="buyTicket" onclick="app2.addEventListener()">Buy Ticket</button>
                 </div>
             </div>
         </form>
