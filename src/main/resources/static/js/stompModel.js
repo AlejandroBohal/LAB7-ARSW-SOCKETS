@@ -6,13 +6,13 @@ var app2 = (function () {
             this.row = row;
             this.col = col;
         }
-    }
+    };
     class SeatPosition{
         constructor(x,y) {
             this.x = x;
             this.y = y;
         }
-    }
+    };
     var stompClient = null;
     var checkPosition = (x, y) => {
         for (let i = 0; i < seatPositions.length; i++) {
@@ -24,10 +24,10 @@ var app2 = (function () {
                 }
             }
         }
-    }
+    };
     var getMousePosition = function (evt) {
         $('#myCanvas').click(function (e) {
-            var rect =myCanvas.getBoundingClientRect();
+            var rect = myCanvas.getBoundingClientRect();
             var x = e.clientX - rect.left;
             var y = e.clientY - rect.top;
             checkPosition(x, y);
@@ -77,7 +77,7 @@ var app2 = (function () {
     var addEventListener = () =>{
         getMousePosition();
         document.getElementById("buyTicket").disabled = true;
-    }
+    };
     var verifyAvailability = function (row,col) {
         let seat = new Seat(row,col)
         if (seats[row][col] === true){
@@ -106,7 +106,6 @@ var app2 = (function () {
             let st = new Seat(row, col);
             seats[row][col]=false;
             drawSeats();
-            // addPointToCanvas(pt);
         },
         disconnect: function () {
             if (stompClient !== null) {
