@@ -38,7 +38,8 @@ and open the template in the editor.
                     </div>
                     <div class="col-auto">
                         <button type="button" class="btn btn-primary mb-2"
-                                onclick="app2.connectToMovie($('#name').val().concat($('#date').val()).concat($('#movie').val()))">
+                                onclick="app2.connectToMovie($('#name').val().concat('.')
+                                .concat($('#date').val()).concat('.').concat($('#movie').val()))">
                                 Conectarse
                         </button>
                     </div>
