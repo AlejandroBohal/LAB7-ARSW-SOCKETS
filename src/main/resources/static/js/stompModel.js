@@ -62,12 +62,12 @@ var app2 = (function () {
             row++;
         }
     };
-    var connectAndSubscribe = function () {
+    var connectAndSubscribe = function (id) {
         console.info('Connecting to WS...');
         var socket = new SockJS('/stompendpoint');
         stompClient = Stomp.over(socket);
         stompClient.connect({}, function (frame) {
-            stompClient.subscribe('/topic/buyticket', message =>{
+            stompClient.subscribe('/topic/buyticket.'+id, message =>{
                 let response = JSON.parse(message.body);
                 app2.changeSeat(response.row,response.col);
             }
@@ -78,27 +78,34 @@ var app2 = (function () {
         getMousePosition();
         document.getElementById("buyTicket").disabled = true;
     };
-    var verifyAvailability = function (row,col) {
+    var verifyAvailability = function (row,col,id) {
         let seat = new Seat(row,col)
         if (seats[row][col] === true){
             seats[row][col]=false;
-            stompClient.send("/topic/buyticket", {} , JSON.stringify(seat));
+            stompClient.send("/topic/buyticket." + id, {} , JSON.stringify(seat));
         }
         else{
             alert("Ticket not available");
         }
     };
     return {
+        idCinema:'',
         init: function () {
             var can = document.getElementById("canvas");
             drawSeats();
             connectAndSubscribe();
         },
+        connectToMovie: function(id){
+            var can = document.getElementById("canvas");
+            drawSeats();
+            this.idCinema = id;
+            connectAndSubscribe(id);
+        },
         addEventListener:addEventListener,
         buyTicket: function (row, col) {
             let st = new Seat(row, col);
             console.info("buying ticket at row: " + row + "col: " + col);
-            verifyAvailability(row,col);
+            verifyAvailability(row,col,this.idCinema);
             drawSeats();
             // addPointToCanvas(pt);
         },

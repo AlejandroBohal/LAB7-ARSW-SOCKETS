@@ -16,14 +16,39 @@ and open the template in the editor.
         <link rel="stylesheet"
               href="/webjars/bootstrap/4.5.2/css/bootstrap.min.css"/>
         <script src="js/stompModel.js"></script>
-
-        
     </head>
-    <body  onload="app2.init()">
+    <body>
         <div>
-        <canvas id="myCanvas" width="500" height="400" style="border:1px solid #000000;">
-        Your browser does not support the HTML5 canvas tag.
-        </canvas>
+            <h2 class="text-primary">Cinema tickets</h2>
+        </div>
+        <div>
+            <form>
+                <div class="form-row align-items-center">
+                    <div class="col-auto">
+                        <label class="sr-only" for="name">Cinema</label>
+                        <input type="text" class="form-control mb-2" id="name" placeholder="Nombre cine">
+                    </div>
+                    <div class="col-auto">
+                        <label class="sr-only" for="name">Fecha</label>
+                        <input type="date" class="form-control mb-2" id="date" placeholder="Fecha">
+                    </div>
+                    <div class="col-auto">
+                        <label class="sr-only" for="name">Fecha</label>
+                        <input type="movie" class="form-control mb-2" id="movie" placeholder="Pelicula">
+                    </div>
+                    <div class="col-auto">
+                        <button type="button" class="btn btn-primary mb-2"
+                                onclick="app2.connectToMovie($('#name').val().concat($('#date').val()).concat($('#movie').val()))">
+                                Conectarse
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div>
+            <canvas id="myCanvas" width="500" height="400" style="border:1px solid #000000;">
+            Your browser does not support the HTML5 canvas tag.
+            </canvas>
         </div>
         <form>
             <div class="form-row align-items-center">
