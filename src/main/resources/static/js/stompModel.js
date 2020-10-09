@@ -14,7 +14,7 @@ var app2 = (function () {
         }
     };
     var stompClient = null;
-    var checkPosition = (x, y) => {
+    const checkPosition = (x, y) => {
         for (let i = 0; i < seatPositions.length; i++) {
             for (let j = 0; j < seatPositions[i].length; j++) {
                 if (x >= seatPositions[i][j].x && x <= seatPositions[i][j].x + 20) {
@@ -25,7 +25,7 @@ var app2 = (function () {
             }
         }
     };
-    var getMousePosition = function (evt) {
+    const getMousePosition = function (evt) {
         $('#myCanvas').click(function (e) {
             var rect = myCanvas.getBoundingClientRect();
             var x = e.clientX - rect.left;
@@ -33,7 +33,7 @@ var app2 = (function () {
             checkPosition(x, y);
         });
     };
-    var drawSeats = function (cinemaFunction) {
+    const drawSeats = function (cinemaFunction) {
         var c = document.getElementById("myCanvas");
         var ctx = c.getContext("2d");
         ctx.fillStyle = "#001933";
@@ -74,15 +74,15 @@ var app2 = (function () {
             );
         });
     };
-    var addEventListener = () =>{
+    let addEventListener = () =>{
         getMousePosition();
         document.getElementById("buyTicket").disabled = true;
     };
-    var verifyAvailability = function (row,col,id) {
+    let verifyAvailability = function (row,col,id) {
         let seat = new Seat(row,col)
         if (seats[row][col] === true){
             seats[row][col]=false;
-            stompClient.send("/topic/buyticket." + id, {} , JSON.stringify(seat));
+            stompClient.send("/app/buyticket." + id, {} , JSON.stringify(seat));
         }
         else{
             alert("Ticket not available");
@@ -107,7 +107,6 @@ var app2 = (function () {
             console.info("buying ticket at row: " + row + "col: " + col);
             verifyAvailability(row,col,this.idCinema);
             drawSeats();
-            // addPointToCanvas(pt);
         },
         changeSeat: function (row, col) {
             let st = new Seat(row, col);

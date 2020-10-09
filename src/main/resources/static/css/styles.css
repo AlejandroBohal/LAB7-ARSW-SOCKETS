@@ -1,0 +1,72 @@
+
+h2 {
+    font-family: 'Raleway',sans-serif;
+    font-size: 30px; font-weight: 800;
+    line-height: 36px; margin: 0 0 24px;
+    text-align: center;
+}
+p,label {
+    font-family: 'Raleway',sans-serif;
+    font-size: 16px; font-weight: 600;
+    line-height: 36px; margin: 0 0 24px;
+}
+/* Style the form - display items horizontally */
+.form-inline {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+}
+
+/* Add some margins for each label */
+.form-inline label {
+    margin: 5px 10px 5px 0;
+}
+
+/* Style the input fields */
+.form-inline input {
+    vertical-align: middle;
+    margin: 5px 10px 5px 0;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+/* Style the submit button */
+
+
+
+/* Add responsiveness - display the form controls vertically instead of horizontally on screens that are less than 800px wide */
+@media (max-width: 800px) {
+    .form-inline input {
+        margin: 10px 0;
+    }
+
+    .form-inline {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+.row {
+    margin:0 -15px;
+}
+.column {
+    flex: 50%;
+    padding:0 15px;
+}
+hr{
+    background-color: #ccc;
+}
+.bg{
+    background-color: springgreen;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 5px;
+    margin-top: 20px;
+}
+
+
+
+
