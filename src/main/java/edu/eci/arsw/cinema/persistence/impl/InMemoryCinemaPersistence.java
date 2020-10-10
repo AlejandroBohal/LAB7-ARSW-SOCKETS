@@ -49,18 +49,19 @@ public class InMemoryCinemaPersistence implements CinemaPersitence{
         List<CinemaFunction> functionsOfOurCinema=cinemaTicket.getFunctions();
         CinemaFunction cfUpdated = null;
         boolean functionFound=false;
-        for (CinemaFunction cf: functionsOfOurCinema) {
-            if(cf.getMovie().getName().equals(movieName) && cf.getDate().contains(date)){
-                cf.buyTicket(row,col);
-                functionFound=true;
-                cfUpdated = cf;
-                break;
+        synchronized (functionsOfOurCinema){
+            for (CinemaFunction cf: functionsOfOurCinema) {
+                if(cf.getMovie().getName().equals(movieName) && cf.getDate().contains(date)){
+                    cf.buyTicket(row,col);
+                    functionFound=true;
+                    cfUpdated = cf;
+                    break;
+                }
             }
+            if (!functionFound){
+                throw new CinemaException("No se encontraron funciones con los parametros indicados.");
+            } return cfUpdated;
         }
-        if (!functionFound){
-            throw new CinemaException("No se encontraron funciones con los parametros indicados.");
-        } return cfUpdated;
-
     }
     @Override
     public List<CinemaFunction> getFunctionsbyCinemaAndDate(String cinema, String date){

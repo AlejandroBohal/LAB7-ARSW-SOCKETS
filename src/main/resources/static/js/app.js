@@ -3,6 +3,8 @@ let app = (() => {
     let date = undefined;
     let movies = []
     let service = apiclient;
+    let seats = [];
+    let seatPositions = [[null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null], [null, null, null, null, null, null, null, null, null, null, null, null]];
     let stompClient = null;
     class Seat {
         constructor(row, col) {
@@ -10,7 +12,12 @@ let app = (() => {
             this.col = col;
         }
     };
-    // let service = apimock;
+    class SeatPosition {
+        constructor(row, col) {
+            this.x = row;
+            this.y = col;
+        }
+    };
     const mapToObjects = (cinemaFunctions) => {
         let table = $("#tabla > tbody");
         table.empty();
@@ -66,16 +73,24 @@ let app = (() => {
                 const x = j * 35, y = i * 35
                 if (j < 2) {
                     lapiz.fillRect(x + 24, y, 30, 30);
+                    setPosition(i,j,x+24,y);
                 } else if (j >= 2 && j < 10) {
                     lapiz.fillRect(x + 48, y, 30, 30);
+                    setPosition(i,j,x+48,y);
                 } else {
                     lapiz.fillRect(x + 72, y, 30, 30);
+                    setPosition(i,j,x+72,y)
                 }
             }
         }
         lapiz.fillStyle = 'darkSlateGray';
         lapiz.fillRect(canvas.width - 390, canvas.height - 30, 275, 6);
         $('#numeroDeAsientos').text(`Asientos Disponibles: ${numeroAsientosDisponibles}`);
+    }
+    const setPosition = (i,j,x,y)  => {
+        if(seatPositions[i][j] === null){
+            seatPositions[i][j] = new SeatPosition(x, y);
+        }
     }
     const changeCinemaName = (newCinema) =>{
         cinemaName = newCinema;
@@ -110,18 +125,32 @@ let app = (() => {
         service.getFunctionsByCinemaAndDate(name, date, (funciones) => {
             for (const funcion of funciones) {
                 if (funcion.movie.name === functionName) {
+                    seats = funcion.seats;
                     draw(funcion.seats);
                     break;
                 }
             }
         })
     }
+    const checkPosition = (x, y) => {
+        console.log("hola?");
+        console.log(seatPositions.length);
+        for (let i=0; i<seatPositions.length;i++){
+            for(let j=0; j<seatPositions[i].length;j++){
+                if (x >= seatPositions[i][j].x && x <= seatPositions[i][j].x + 30) {
+                    if (y >= seatPositions[i][j].y && y <= seatPositions[i][j].y + 30) {
+                        app.buyTicket(i,j)
+                    }
+                }
+            }
+        }
+    };
     const getMousePosition = function (evt) {
         $('#canvas').click(function (e) {
             var rect = canvas.getBoundingClientRect();
             var x = e.clientX - rect.left;
             var y = e.clientY - rect.top;
-            console.log(x,y);
+            checkPosition(x, y);
         });
     };
     const getSeats = (name, date, functionName) => {
@@ -177,14 +206,7 @@ let app = (() => {
             });
         }
     }
-    const buyTicket = (row, col, cinema, date, movieName) => {
-        service.buyTicket(cinema, date, movieName, row - 1, col - 1, (funcion) => {
-                draw(funcion.seats)
-            }
-        )
-    }
     const deleteFunction = (cinema,date,movieName) =>{
-        console.log("Hola?")
         clearCanvas();
         const availability = $('#Availability');
         availability.empty();
@@ -194,23 +216,33 @@ let app = (() => {
     }
     const connectAndSubscribe = (id) =>{
         $('#canvas').off("click");
+        app.disconnect();
         console.info('Connecting to WS...');
         var socket = new SockJS('/stompendpoint');
         stompClient = Stomp.over(socket);
         stompClient.connect({}, function (frame) {
             stompClient.subscribe('/topic/buyticket.'+id, message =>{
                     let response = JSON.parse(message.body);
-                    app.changeSeat(response.row,response.col);
+                    draw(response);
                 }
             );
         });
     };
-    const changeSeat = (row, col) => {
-        let st = new Seat(row, col);
-    }
+
     const addEventListener = () =>{
         getMousePosition();
         document.getElementById("buyTicket").disabled = true;
+    };
+    const verifyAvailability = function (row,col,id) {
+        let seat = new Seat(row,col)
+        if (seats[row][col] === true){
+            seats[row][col]=false;
+            stompClient.send("/app/buyticket." + id, {} , JSON.stringify(seat));
+        }
+        else{
+            alert("Ticket not available");
+        }
+        stompClient.send("/app/buyticket." + id, {} , JSON.stringify(seat));
     };
     return {
         idCinema:'',
@@ -219,15 +251,23 @@ let app = (() => {
         getSeats:getSeats,
         admin:admin,
         createOrUpdateFunction:createOrUpdateFunction,
-        buyTicket:buyTicket,
         getFunctions:getFunctions,
         nuevaFuncion: nuevaFuncion,
         deleteFunction:deleteFunction,
-        changeSeat:changeSeat,
         addEventListener:addEventListener,
         connectToMovie(id){
             this.idCinema = id;
             connectAndSubscribe(id);
+        },
+        buyTicket: function (row, col) {
+            let st = new Seat(row, col);
+            console.info("buying ticket at row: " + row + "col: " + col);
+            verifyAvailability(row,col,this.idCinema);
+        },disconnect: function () {
+            if (stompClient !== null) {
+                stompClient.disconnect();
+            }
+            console.log("Disconnected");
         }
 
     }

@@ -54,9 +54,7 @@ public class CinemaFunction {
         if (seats.get(row).get(col).equals(true)){
             seats.get(row).set(col,Boolean.FALSE);
         }
-        else{
-            throw new CinemaException("Seat booked");
-        }
+
     }
     
     public List<List<Boolean>> getSeats() {

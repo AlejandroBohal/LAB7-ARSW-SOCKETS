@@ -63,7 +63,6 @@ public class CinemaAPIController {
             throw  new ResourceNotFoundException(e.getMessage(),e);
         }
     }
-
     /**
      * Gets functions by name and date.
      *
@@ -81,7 +80,6 @@ public class CinemaAPIController {
             return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
     /**
      * Gets functions by name and date and movie.
      *
@@ -101,27 +99,6 @@ public class CinemaAPIController {
         }
     }
 
-    /**
-     * Buy ticket response entity.
-     *
-     * @param name      the name
-     * @param date      the date
-     * @param moviename the moviename
-     * @param row       the row
-     * @param col       the col
-     * @return the response entity
-     * @throws ResourceNotFoundException the resource not found exception
-     */
-    @PostMapping( value = "/cinemas/{name}/{date}/{moviename}/{row}/{col}")
-    public ResponseEntity<?> buyTicket(@PathVariable String name,@PathVariable String date,@PathVariable String moviename, @PathVariable int row, @PathVariable int col) throws ResourceNotFoundException {
-        try {
-            cinemaServices.buyTicket(row,col,name,date,moviename);
-            CinemaFunction data = cinemaServices.getFunctionByCinemaAndDateAndMovie(name,date,moviename);
-            return new ResponseEntity<>(data, HttpStatus.ACCEPTED);
-        } catch (CinemaPersistenceException | CinemaException e) {
-            throw  new ResourceNotFoundException(e.getMessage(),e);
-        }
-    }
 
     /**
      * Add function to cinema response entity.
